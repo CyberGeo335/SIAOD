@@ -1,0 +1,332 @@
+#include"BST.h"
+#include "BinFile.h"
+#include "BTree.h"
+
+using namespace std;
+extern double counter;
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	class node *root = NULL;
+	BTree t(2);
+	string txt_file, bin_file;
+	string key;
+	Dictionary temp;
+	int adress;
+	string *words/* = new string[10000]*/;
+	int i = 0;
+	while (true)
+	{
+		system("cls");
+		cout << "Введите номер задания:\n1-Создание файла\n2-Поиск с помощью линейного поиска\n3-вывод записи по ее адресу\n4-Добавление записи в файл\n5-Построение бинарного дерева по файлу\n6-Добавление элемента в дерево\n7-Поиск по ключу в дереве\n8-Удаление элемента из дерева\n9-Вывод дерева\n10-Построение B-дерева по файлу\n11-Добавление элемента в дерево\n12-Поиск по ключу в дереве\n13-Удаление элемента из дерева\n14-Вывод дерева\nЛюбой другой номер закроет программу" << endl;
+		int k = 0;
+		cin >> k;
+		if (k == 1)
+		{
+			system("cls");
+			cout << "Создание файла" << endl;
+			cout << "Введите имя текстового файла" << endl;
+			cin >> txt_file;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			if (BinFile::txt_to_bin(txt_file, bin_file) == 1)
+			{
+				cout << "Успешно создано" << endl;
+			}
+			else
+			{
+				cout << "Файл не существует" << endl;
+			}
+			system("pause");
+		}
+		if (k == 2)
+		{
+			system("cls");
+			cout << "Поиск с помощью линейного поиска" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			cout << "Введите ключ (английское слово)" << endl;
+			cin >> key;
+			temp=BinFile::linear_search(bin_file, key);
+			if (temp.eng_word[0] != ' ')
+			{
+				cout << temp.eng_word << " " << temp.rus_word;
+			}
+			else
+			{
+				cout <<"Запись с таким ключом не найдена" << endl;;
+			}
+			system("pause");
+		}
+		if (k == 3)
+		{
+			system("cls");
+			cout << "вывод записи по ее адресу" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			cout << "Введите позицию" << endl;
+			cin >> adress;
+			temp=BinFile::get_class(bin_file, adress);
+			if (temp.eng_word[0] != ' ')
+			{
+				cout << temp.eng_word << " " << temp.rus_word;
+			}
+			else
+			{
+				cout << "Запись с таким ключом не найдена" << endl;;
+			}
+			system("pause");
+		}
+		if (k == 4)
+		{
+			system("cls");
+			cout << "Добавление записи в файл" << endl; 
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ofstream outp;
+			outp.open(bin_file, ios::binary||ios::app);
+			cout << "Введите английское слово ";
+			cin >> temp.eng_word;
+			cout << "Введите русское слово(английский язык) ";
+			cin >> temp.rus_word;
+			if (outp.good())
+			{
+				BinFile::AddToBin(outp, temp);
+			}
+			else
+			{
+				cout << "Такого файла не существует" << endl;
+			}
+			outp.close();
+			system("pause");
+		}
+		if (k == 5)
+		{
+			system("cls");
+			cout << "Построение бинарного дерева по файлу" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ifstream inp;
+			inp.open(bin_file, ios::binary || ios::app);
+			if (inp.good())
+			{
+				inp.close();
+				words = BinFile::getwords(bin_file);
+				while (words[i] != "\0")
+				{
+					root = node::insert(root, words[i], i);
+					i++;
+				}
+				cout << "Успешно" << endl;
+				//delete[] words;
+			}
+			else
+			{
+				cout << "Файл не существует" << endl;
+			}
+			system("pause");
+		}
+		if (k == 6)
+		{
+			system("cls");
+			cout << "Добавление элемента в дерево" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ofstream outp;
+			outp.open(bin_file, ios::binary || ios::app);
+
+			cout << "Введите английское слово ";
+			cin >> temp.eng_word;
+			cout << "Введите русское слово(английский язык) ";
+			cin >> temp.rus_word;
+			if (outp.good())
+			{
+				BinFile::AddToBin(outp, temp);
+				root = node::insert(root, temp.eng_word, i);
+				i++;
+			}
+			else
+			{
+				cout << "Такого файла не существует" << endl;
+			}
+			outp.close();
+			system("pause");
+		}
+		if (k == 7)
+		{
+			system("cls");
+			cout << "Поиск по ключу в дереве" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ofstream outp;
+			outp.open(bin_file, ios::binary || ios::app);
+			if (outp.good())
+			{
+				cout << "Введите ключ(английское слово) ";
+				cin >> key;
+				adress = node::search(root, key);
+				if (adress!=-1)
+				{
+					temp = BinFile::get_class(bin_file, adress);
+					cout << temp.eng_word << " " << temp.rus_word;
+				}
+				else
+				{
+					cout << "Запись с таким ключом не найдена" << endl;
+				}
+			}
+			else
+			{
+				cout << "такого файла не существует" << endl;
+			}
+			outp.close();
+			system("pause");
+		}
+		if (k == 8)
+		{
+			system("cls");
+			cout << "Удаление элемента из дерева" << endl;
+			cout << "Введите ключ" << endl;
+			cin >> key;
+			if (node::search(root, key) != -1)
+			{
+				root = node::deleteNode(root, key);
+				cout << "Успешно удалено" << endl;
+			}
+			else
+			{
+				cout << "Запись с таким ключом не найдена" << endl;
+			}
+			system("pause");
+		}
+		if (k == 9)
+		{
+			system("cls");
+			cout << "Вывод дерева" << endl;
+			cout << "Вывод ключей дерева" << endl;
+			node::printBT("", root, false, 1);
+			cout << "Вывод значений дерева" << endl;
+			node::printBT("", root, false, 0);
+			system("pause");
+		}
+		if (k == 10)
+		{
+			system("cls");
+			cout << "Построение B-дерева по файлу" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ifstream inp;
+			i = 0;
+			inp.open(bin_file, ios::binary || ios::app);
+			if (inp.good())
+			{
+				inp.close();
+				words = BinFile::getwords(bin_file);
+				while (words[i] != "\0")
+				{
+					t.insert(words[i], i);
+					i++;
+				}
+				cout << "Успешно" << endl;
+			}
+			else
+			{
+				cout << "Файл не существует" << endl;
+			}
+			system("pause");
+		}
+		if (k == 11)
+		{
+			system("cls");
+			cout << "Добавление элемента в дерево" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ofstream outp;
+			outp.open(bin_file, ios::binary || ios::app);
+
+			cout << "Введите английское слово ";
+			cin >> temp.eng_word;
+			cout << "Введите русское слово(английский язык) ";
+			cin >> temp.rus_word;
+			if (outp.good())
+			{
+				BinFile::AddToBin(outp, temp);
+				t.insert(temp.eng_word, i);
+				i++;
+			}
+			else
+			{
+				cout << "Такого файла не существует" << endl;
+			}
+			outp.close();
+			system("pause");
+		}
+		if (k == 12)
+		{
+			system("cls");
+			cout << "Поиск по ключу в дереве" << endl;
+			cout << "Введите имя бинарного файла" << endl;
+			cin >> bin_file;
+			ofstream outp;
+			outp.open(bin_file, ios::binary || ios::app);
+			if (outp.good())
+			{
+				cout << "Введите ключ(английское слово) ";
+				cin >> key;
+				adress = t.search(key);
+				if (adress != NULL)
+				{
+					temp = BinFile::get_class(bin_file, adress);
+					cout << temp.eng_word << " " << temp.rus_word;
+				}
+				else
+				{
+					cout << "Запись с таким ключом не найдена" << endl;
+				}
+			}
+			else
+			{
+				cout << "такого файла не существует" << endl;
+			}
+			outp.close();
+			system("pause");
+		}
+		if (k == 13)
+		{
+			system("cls");
+			cout << "Удаление элемента из дерева" << endl;
+			cout << "Введите ключ" << endl;
+			cin >> key;
+			if (t.search(key) != NULL)
+			{
+				t.deletion(key);
+				cout << "Успешно удалено" << endl;
+			}
+			else
+			{
+				cout << "Запись с таким ключом не найдена" << endl;
+			}
+			system("pause");
+		}
+		if (k == 14)
+		{
+			system("cls");
+			cout << "Вывод дерева" << endl;
+			t.traverse();
+			system("pause");
+		}
+		if (k < 1 || k>14)
+		{
+			cout << "Вы уверены, что хотите выйти? Y/N" << endl;
+			char j;
+			cin >> j;
+			if (j == 'Y')
+			{
+				cout << "Выход... ";
+				system("pause");
+				exit(0);
+			}
+		}
+	}
+}

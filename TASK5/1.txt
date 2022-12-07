@@ -1,0 +1,4 @@
+key kluch
+word slovo
+man mugchina
+dog sobaka
